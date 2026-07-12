@@ -1,0 +1,100 @@
+<title>The Practice Court — high-signal racket sources</title>
+<style>
+:root{--bg:#FAF7F2;--ink:#1C1A17;--clay:#A6432C;--line:#E3DBCE;--mut:#6F675B;--card:#FFFFFF;--chip:#F1EBE0}
+@media(prefers-color-scheme:dark){:root{--bg:#171410;--ink:#EDE7DB;--clay:#D9814F;--line:#2E2820;--mut:#9A9184;--card:#1F1B15;--chip:#26211A}}
+:root[data-theme="dark"]{--bg:#171410;--ink:#EDE7DB;--clay:#D9814F;--line:#2E2820;--mut:#9A9184;--card:#1F1B15;--chip:#26211A}
+:root[data-theme="light"]{--bg:#FAF7F2;--ink:#1C1A17;--clay:#A6432C;--line:#E3DBCE;--mut:#6F675B;--card:#FFFFFF;--chip:#F1EBE0}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:32px 20px 80px}
+.wrap{max-width:1060px;margin:0 auto}
+h1{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(28px,4vw,42px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 em{color:var(--clay);font-style:italic}
+.sub{color:var(--mut);max-width:62ch;margin:10px 0 26px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 14px;border-radius:999px;cursor:pointer;font-size:14px}
+.tab .n{color:var(--mut);font-variant-numeric:tabular-nums;margin-left:4px}
+.tab.on{background:var(--clay);border-color:var(--clay);color:#FFF}.tab.on .n{color:#FFD9C4}
+input[type=search]{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 12px;border-radius:8px;font-size:14px;min-width:200px;margin-left:auto}
+.note{font-size:13px;color:var(--mut);margin:6px 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;position:relative;display:flex;flex-direction:column;gap:8px}
+.card.t1{box-shadow:inset 3px 0 0 var(--clay)}
+.top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.handle{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;font-weight:600;color:var(--clay);text-decoration:none}
+.handle:hover{text-decoration:underline}
+.tier{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-left:auto}
+.who{font-size:14px;font-weight:600}
+.why{font-size:14px;color:var(--mut)}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.chip{background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--mut)}
+label.fl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);cursor:pointer;margin-left:auto}
+.sect{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:20px;margin:30px 0 12px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.empty{color:var(--mut);padding:40px 0;text-align:center}
+a{color:var(--clay)}
+</style>
+<div class="wrap">
+<h1>The Practice Court <em>— sources that clear the bar</em></h1>
+<p class="sub">Original footage only. Working coaches, training floors, and pros documenting their own work — no aggregators, no highlight mills, no tuition slop. Vetted July 2026; check a card once you follow it (saved on this device).</p>
+<div class="bar" id="tabs"></div>
+<input type="search" id="q" placeholder="Search name, credential…" style="margin:0 0 8px">
+<p class="note" id="count"></p>
+<div id="list"></div>
+</div>
+<script>
+const D=[
+// domain,tier(1|2),handle,url,who,why,langs
+["Tennis",1,"@baileytennisfootwork","https://instagram.com/baileytennisfootwork","Dave Bailey — footwork specialist, USTA National Campus","Contact-move taxonomy built from 18,000+ pro clips; moved 21 Slam-level pros. A classified movement system, not tips.","EN"],
+["Tennis",1,"@maciej_ryszczuk_rehsport","https://instagram.com/maciej_ryszczuk_rehsport","Maciej Ryszczuk — Świątek's S&C + physio","Real periodization and rehab from inside a #1's camp, posted by the man doing it.","EN/PL"],
+["Tennis",1,"@piattitenniscenter","https://instagram.com/piattitenniscenter","Piatti Tennis Center, Bordighera","Sinner's formative floor; measurement-driven method; the academy's own courts and staff, zero media arm.","IT/EN"],
+["Tennis",1,"@globaltennisteam","https://instagram.com/globaltennisteam","Jofre Porta — built Moyá & Nadal's foundations","Heterodox, constraint-heavy drill architecture from a builder of #1s.","ES"],
+["Tennis",1,"@mytenniscoaching","https://instagram.com/mytenniscoaching","Steve Whelan — constraints-led / ecological dynamics","The only confirmed tennis-CLA account: a different learning paradigm, not more tuition.","EN"],
+["Tennis",1,"@elabiertoclub","https://instagram.com/elabiertoclub","El Abierto Club, Buenos Aires","8k-follower club where Zeballos & co. actually train. Pure primary source — and on the BA trip route.","ES"],
+["Tennis",1,"@karuesell","https://instagram.com/karuesell","Karue Sell — ex-UCLA, Osaka's ex-hitting partner","Documents his own Challenger run; trains with Giron in Redondo Beach. Worth a DM as much as a follow.","EN/PT"],
+["Tennis",2,"@sportsciencelab","https://instagram.com/sportsciencelab","Gavin MacMillan — rebuilt Sabalenka's serve, now Gauff","The person > the account: grid leans podcast clips + cert promo. Follow for when he shows real serve work.","EN"],
+["Tennis",2,"@sventennis","https://instagram.com/sventennis","Sven Groeneveld — Sharapova, Seles, Ivanovic; now Taro Daniel","Tiny, unpolished, currently-working tour coach. Anti-influencer profile.","EN"],
+["Tennis",2,"@equeliteferrero","https://instagram.com/equeliteferrero","JC Ferrero Equelite — Alcaraz's home base","The actual training environment of the world's best, posted by the academy. Scroll for promo ratio.","ES/EN"],
+["Tennis",2,"@4slamtennis","https://instagram.com/4slamtennis","4Slam, Barcelona — Galo Blanco & Fernando Vicente","Tour-proven staff (Raonic/Rublev coaches) filming their own drilling; ~10k followers.","ES/EN"],
+["Tennis",2,"@btt_academy","https://instagram.com/btt_academy","BTT Barcelona — Francis Roig (Nadal's ex co-coach)","Genuine Spanish pro pipeline posting its own students.","ES/EN"],
+["Tennis",2,"@stanwawrinka85","https://instagram.com/stanwawrinka85","Stan Wawrinka","Feed dominated by actual hitting/gym blocks, not lifestyle.","EN/FR"],
+["Tennis",2,"@fucsovicsmarci","https://instagram.com/fucsovicsmarci","Márton Fucsovics","Best physical-prep primary source among active players — real S&C blocks.","EN/HU"],
+["Tennis",2,"@murphycassone","https://instagram.com/murphycassone","Murphy Cassone — ATP Challenger","Self-produced film study of his own movement/serve work.","EN"],
+["Tennis",2,"@coshannessy","https://instagram.com/coshannessy","Craig O'Shannessy — Djokovic's ex strategy analyst","Deepest tactics mind on IG, but the dense work lives at braingametennis.com; IG mixes travel.","EN"],
+["Tennis",2,"@yutakanakamura_","https://instagram.com/yutakanakamura_","Yutaka Nakamura — S&C: Sharapova, Osaka, Raducanu","Posts actual on-court/gym sessions with current top players.","EN/JP"],
+["Tennis",2,"@built4tennis","https://instagram.com/built4tennis","Jez Green — S&C: Murray 9yrs, Zverev","Tour conditioning from the source.","EN"],
+["Table Tennis",1,"@borussiaduesseldorf","https://instagram.com/borussiaduesseldorf","Borussia Düsseldorf — Boll's club, andro TT-School","Europe's most decorated club filming its own training hall.","DE/EN"],
+["Table Tennis",1,"@dimaovtcharov","https://instagram.com/dimaovtcharov","Dimitrij Ovtcharov — ex world #1","His famously brutal physical blocks, first person. Studied by other pros.","EN/DE"],
+["Table Tennis",1,"@moregardhtruls","https://instagram.com/moregardhtruls","Truls Möregårdh — Olympic silver ×2","Unusually training-forward for a top-5 player account.","EN/SV"],
+["Table Tennis",1,"@hugocalderano","https://instagram.com/hugocalderano","Hugo Calderano — World Cup champion","The most professional athlete media op in TT; IG clips feed from full YouTube training vlogs.","PT/EN"],
+["Table Tennis",2,"@felix.lebrun","https://instagram.com/felix.lebrun","Félix Lebrun — WR top 5, penhold","Team Lebrun training at INSEP; the most scrutinized development project in Western TT.","FR/EN"],
+["Table Tennis",2,"@kinoshita_meister","https://instagram.com/kinoshita_meister","Kinoshita Meister Tokyo — T.League champions","Direct window into Japanese pro-club training culture.","JP"],
+["Table Tennis",2,"@mhtabletennis","https://instagram.com/mhtabletennis","Matt Hetherington — ITTF L3, ex-NZ national coach","The one passable TT coach account; skip its intermediate-tuition share.","EN"],
+["Padel",1,"@rodri_ovide","https://instagram.com/rodri_ovide","Rodrigo Ovide — most decorated coach in padel","70+ pro titles (Lebrón, Paquito); posts his own sessions and drill construction. The reference account.","ES"],
+["Padel",1,"@guspratto","https://instagram.com/guspratto","Gustavo Pratto — coach of Coello/Tapia (world #1 pair)","The man who built the current #1s, posting his methodology.","ES"],
+["Padel",1,"@gabyreca","https://instagram.com/gabyreca","Gaby Reca — ex world #1; developed Tapia","Smaller account, realer coaching; player-development thinking.","ES/EN"],
+["Padel",1,"@m3padelacademy","https://instagram.com/m3padelacademy","M3 Padel Academy, Madrid — Galán/Chingotto/Brea's base","Best 'academy posting its own floor' in padel, incl. pro sparring matches.","ES"],
+["Padel",2,"@tapia","https://instagram.com/tapia","Agustín Tapia — world #1","Real training blocks mixed with sponsor content; pair with @arturocoello__.","ES"],
+["Padel",2,"@mariano_amat","https://instagram.com/mariano_amat","Mariano Amat — coached Galán/Lebrón at #1; now Aspire Doha","Elite thinking; lower pro-session volume since leaving the tour bench.","ES/EN"],
+["Off-platform",1,"Tennisplayer / TCPR","https://tennisperformanceresearch.com","Brian Gordon — 3D stroke biomechanics","The most rigorous technical mind in tennis. Site + Tennisplayer.net series; IG is secondary.","EN"],
+["Off-platform",1,"Perception & Action","https://perceptionaction.com","Rob Gray — motor learning / ecological dynamics","350+ episode canon of skill acquisition. The theory under everything above.","EN"],
+["Off-platform",1,"Brain Game Tennis","https://braingametennis.com","Craig O'Shannessy","First-4-shots / serve+1 pattern analytics — the deep end, off IG.","EN"],
+["Off-platform",1,"LTA / YouTube talks","https://www.lta.org.uk/advantage-home/content/british-doubles-guru-louis-cayer-on-his-approach-to-tennis-coaching/","Louis Cayer — built 3 doubles world #1s","Best doubles/net-play teaching alive. No IG.","EN"],
+["Off-platform",1,"Douyin / Bilibili","https://www.bilibili.com","Chinese national & provincial team multiball","The top TT tier does not exist first-party on IG. Search 乒乓球多球训练 / 省队训练.","中文"],
+["Off-platform",2,"YouTube @servedoc","https://www.youtube.com/@servedoc","Pat Dougherty — Bollettieri/IMG 'Serve Doctor'","Serve-build archive; IG unconfirmed.","EN"],
+["Off-platform",2,"ResearchGate / Sloan","https://www.researchgate.net/profile/Machar-Reid","Machar Reid — ex Head of Innovation, Tennis Australia","100+ papers; editor of ITF's Biomechanics of Advanced Tennis.","EN"]];
+const doms=["All","Tennis","Table Tennis","Padel","Off-platform"];let cur="All";
+const KEY="pc-followed";let fol={};try{fol=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+const tabs=document.getElementById("tabs"),list=document.getElementById("list"),q=document.getElementById("q"),count=document.getElementById("count");
+function nTab(d){const c=d==="All"?D.length:D.filter(r=>r[0]===d).length;return `<button class="tab${d===cur?" on":""}" data-d="${d}">${d}<span class="n">${c}</span></button>`}
+function render(){tabs.innerHTML=doms.map(nTab).join("");
+const s=q.value.toLowerCase();const rows=D.filter(r=>(cur==="All"||r[0]===cur)&&(!s||r.join(" ").toLowerCase().includes(s)));
+count.textContent=rows.length+" sources · "+Object.values(fol).filter(Boolean).length+" followed · tier-one cards carry the clay stripe";
+if(!rows.length){list.innerHTML='<p class="empty">Nothing matches.</p>';return}
+let h="",last="";for(const r of rows){if(cur==="All"&&r[0]!==last){last=r[0];h+=`<div class="sect">${r[0]}</div><div class="grid">`;}
+else if(cur!=="All"&&!h)h='<div class="grid">';
+h+=`<div class="card${r[1]===1?" t1":""}"><div class="top"><a class="handle" href="${r[3]}" target="_blank" rel="noopener">${r[2]}</a><span class="tier">Tier ${r[1]}</span></div><div class="who">${r[4]}</div><div class="why">${r[5]}</div><div class="meta"><span class="chip">${r[0]}</span><span class="chip">${r[6]}</span><label class="fl"><input type="checkbox" data-h="${r[2]}" ${fol[r[2]]?"checked":""}> following</label></div></div>`;
+if(cur==="All"){const i=rows.indexOf(r);if(i===rows.length-1||rows[i+1][0]!==r[0])h+="</div>";}}
+if(cur!=="All")h+="</div>";list.innerHTML=h;}
+tabs.addEventListener("click",e=>{const b=e.target.closest(".tab");if(b){cur=b.dataset.d;render()}});
+q.addEventListener("input",render);
+list.addEventListener("change",e=>{const c=e.target.closest("input[type=checkbox]");if(c){fol[c.dataset.h]=c.checked;localStorage.setItem(KEY,JSON.stringify(fol));render()}});
+render();
+</script>
