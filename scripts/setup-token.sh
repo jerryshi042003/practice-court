@@ -27,7 +27,7 @@ COUNT=$(curl -s "https://graph.facebook.com/${V}/${IG_ID}?fields=business_discov
 echo "   got ${COUNT} posts (want >0)"
 
 echo "-> storing GitHub Actions secrets..."
-printf '%s' "$LL"    | gh secret set IG_ACCESS_TOKEN -R "$REPO" --body -@- 2>/dev/null || gh secret set IG_ACCESS_TOKEN -R "$REPO" --body "$LL"
+gh secret set IG_ACCESS_TOKEN -R "$REPO" --body "$LL"
 gh secret set IG_USER_ID -R "$REPO" --body "$IG_ID"
 
 echo "-> triggering first refresh run..."
