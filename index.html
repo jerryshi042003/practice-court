@@ -28,7 +28,7 @@ input[type=search]{border:1px solid var(--line);background:var(--card);color:var
 label.fl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);cursor:pointer;margin-left:auto}
 .pbtn{border:1px solid var(--clay);background:transparent;color:var(--clay);border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer}
 .pbtn:hover{background:var(--clay);color:#FFF}
-.embed{margin-top:10px}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;background:#FFF}
+.embed{margin-top:10px;display:flex;flex-direction:column;gap:10px}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;background:#FFF}
 .sect{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:20px;margin:30px 0 12px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .empty{color:var(--mut);padding:40px 0;text-align:center}
 a{color:var(--clay)}
@@ -86,9 +86,11 @@ const doms=["All","Tennis","Table Tennis","Padel","Off-platform"];let cur="All",
 const KEY="pc-followed";let fol={};try{fol=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
 const tabs=document.getElementById("tabs"),list=document.getElementById("list"),q=document.getElementById("q"),count=document.getElementById("count"),allB=document.getElementById("all");
 const emb=u=>u?u.replace(/\/?$/,"/")+"embed/captioned/":"";
+let live={};fetch("posts.json").then(r=>r.ok?r.json():null).then(j=>{if(j&&j.accounts){live=j.accounts;render()}}).catch(()=>{});
+function embsFor(r){const h=r[2].replace(/^@/,"");const l=live[h];const list=(Array.isArray(l)&&l.length?l.slice(0,3):(r[7]?[r[7]]:[]));return list.map(emb)}
 function nTab(d){const c=d==="All"?D.length:D.filter(r=>r[0]===d).length;return `<button class="tab${d===cur?" on":""}" data-d="${d}">${d}<span class="n">${c}</span></button>`}
-function card(r){const e=emb(r[7]);
-return `<div class="card${r[1]===1?" t1":""}"><div class="top"><a class="handle" href="${r[3]}" target="_blank" rel="noopener">${r[2]}</a><span class="tier">Tier ${r[1]}</span></div><div class="who">${r[4]}</div><div class="why">${r[5]}</div><div class="meta"><span class="chip">${r[0]}</span><span class="chip">${r[6]}</span>${e?`<button class="pbtn" data-e="${e}">▶ post</button>`:""}<label class="fl"><input type="checkbox" data-h="${r[2]}" ${fol[r[2]]?"checked":""}> following</label></div>${e&&showAll?`<div class="embed"><iframe loading="lazy" src="${e}" allowfullscreen></iframe></div>`:""}</div>`}
+function card(r){const es=embsFor(r);const isLive=live[r[2].replace(/^@/,"")]?" · live":"";
+return `<div class="card${r[1]===1?" t1":""}" data-i="${D.indexOf(r)}"><div class="top"><a class="handle" href="${r[3]}" target="_blank" rel="noopener">${r[2]}</a><span class="tier">Tier ${r[1]}${isLive}</span></div><div class="who">${r[4]}</div><div class="why">${r[5]}</div><div class="meta"><span class="chip">${r[0]}</span><span class="chip">${r[6]}</span>${es.length?`<button class="pbtn">▶ post${es.length>1?"s ("+es.length+")":""}</button>`:""}<label class="fl"><input type="checkbox" data-h="${r[2]}" ${fol[r[2]]?"checked":""}> following</label></div>${es.length&&showAll?`<div class="embed">${es.map(e=>`<iframe loading="lazy" src="${e}" allowfullscreen></iframe>`).join("")}</div>`:""}</div>`}
 function render(){tabs.innerHTML=doms.map(nTab).join("");
 const s=q.value.toLowerCase();const rows=D.filter(r=>(cur==="All"||r[0]===cur)&&(!s||r.join(" ").toLowerCase().includes(s)));
 count.textContent=rows.length+" sources · "+Object.values(fol).filter(Boolean).length+" followed · tier-one cards carry the clay stripe";
@@ -102,8 +104,8 @@ h+="</div>";list.innerHTML=h;}
 tabs.addEventListener("click",e=>{const b=e.target.closest(".tab");if(b){cur=b.dataset.d;render()}});
 q.addEventListener("input",render);
 allB.addEventListener("click",()=>{showAll=!showAll;render()});
-list.addEventListener("click",e=>{const b=e.target.closest(".pbtn");if(!b)return;const c=b.closest(".card");const ex=c.querySelector(".embed");
-if(ex){ex.remove();b.textContent="▶ post";}else{const d=document.createElement("div");d.className="embed";d.innerHTML=`<iframe loading="lazy" src="${b.dataset.e}" allowfullscreen></iframe>`;c.appendChild(d);b.textContent="✕ hide";}});
+list.addEventListener("click",e=>{const b=e.target.closest(".pbtn");if(!b)return;const c=b.closest(".card");const ex=c.querySelector(".embed");const r=D[+c.dataset.i];const es=embsFor(r);
+if(ex){ex.remove();b.textContent="▶ post"+(es.length>1?"s ("+es.length+")":"");}else{const d=document.createElement("div");d.className="embed";d.innerHTML=es.map(u=>`<iframe loading="lazy" src="${u}" allowfullscreen></iframe>`).join("");c.appendChild(d);b.textContent="✕ hide";}});
 list.addEventListener("change",e=>{const c=e.target.closest("input[type=checkbox]");if(c){fol[c.dataset.h]=c.checked;localStorage.setItem(KEY,JSON.stringify(fol));render()}});
 render();
 </script>

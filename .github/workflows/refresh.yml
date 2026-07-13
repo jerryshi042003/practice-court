@@ -1,0 +1,26 @@
+name: Refresh posts
+on:
+  schedule:
+    - cron: "0 13 * * *"   # daily ~6am Pacific
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Pull recent posts via business_discovery
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: node scripts/refresh.mjs
+      - name: Commit if changed
+        run: |
+          git config user.name "practice-court-bot"
+          git config user.email "actions@github.com"
+          git add posts.json
+          git diff --cached --quiet || git commit -m "refresh posts $(date -u +%F)"
+          git push
