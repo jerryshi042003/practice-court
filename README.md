@@ -2,7 +2,8 @@
 
 A searchable directory of high-signal sources for tennis, table tennis, padel, and the wider racket-sport world.
 
-Source for a directory prototype. No public demo is currently available.
+Source for a directory prototype. The standalone GitHub Pages host was
+retired; the retained directory is part of the consolidated Tennis CV site.
 
 ## Why it exists
 
